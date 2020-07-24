@@ -1,26 +1,48 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
 import './App.css';
+import { fetchTopStories } from './utils/api'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  state = {
+    stories: null,
+    loading: true
+  }
+
+  componentDidMount() {
+    const { loading } = this.state
+    if(loading) {
+      this.handleStoryLoad()
+    }
+  }
+
+  handleStoryLoad = () => {
+    fetchTopStories()
+      .then((stories) => {
+        this.setState({
+          stories,
+          loading: false
+        })
+      })
+
+  }
+
+  render() {
+    const { stories, loading } = this.state
+
+    if(loading) {
+      return <h1>Loading</h1>
+    }
+
+    return (
+      <div className="App">
+        <ul>
+          {stories && this.state.stories.map((story) => (
+            <li key={story.id}>{story.title}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
 }
 
-export default App;
+export default App
